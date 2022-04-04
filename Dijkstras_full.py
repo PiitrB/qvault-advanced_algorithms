@@ -38,6 +38,7 @@
 # Remove the source node from the unvisited set
 # Recursively call the dijkstra_r and with the min_neighbor as the new src
 
+
 def dijkstra(graph, src, dest):
     unvisited = set()
     for node in graph:
@@ -49,11 +50,39 @@ def dijkstra(graph, src, dest):
         else:
             distances[node] = float('inf')
     ## change this return
-    return graph, src, dest, unvisited, distances
+    
+    return dijkstra_r(graph, src, dest, unvisited, distances, predecessors={})
 
 
-def dijkstra_r(graph, src, dest, unvisited, distances, predecessors={}):
-    # ?
+def dijkstra_r(graph, src, dest, unvisited, distances, predecessors):
+    if src == dest:
+        full_path = [dest]
+        current = dest
+        while current in predecessors:
+            full_path.append(predecessors[current])
+            current = predecessors[current]
+        full_path.reverse()
+        return full_path
+    else: 
+        min_dist = float("inf")
+        min_neighbor = src
+    for neighbor in graph[src]:
+        if neighbor in unvisited:
+            distance_so_far = distances[src]
+            distance_to_neighbor = graph[src][neighbor]
+            total_distance_to_neighbor = distance_so_far + distance_to_neighbor
+            if total_distance_to_neighbor < distances[neighbor]:
+                distances[neighbor]  = total_distance_to_neighbor
+                predecessors[neighbor] = src
+            if total_distance_to_neighbor < min_dist:
+                min_dist = total_distance_to_neighbor
+                min_neighbor = neighbor
+    unvisited.remove(src)
+    return dijkstra_r(graph, min_neighbor, dest, unvisited, distances, predecessors)
+
+    
+    
+
 
     # -- TEST SUITE, DONT TOUCH BELOW THIS LINE --
 
@@ -80,4 +109,4 @@ def main():
     print(dijkstra(graph, 's', 't'))
 
 
-main() ``
+main()
